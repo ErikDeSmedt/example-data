@@ -1,4 +1,5 @@
 ![Rust](https://github.com/ErikDeSmedt/example-data/workflows/Rust/badge.svg)
+![Crates](https://img.shields.io/crates/v/example-data.svg)
 
 # Example-data
 
