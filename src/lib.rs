@@ -1,8 +1,8 @@
-//! example-data is created to easily load common datasets.
+//! example-data is created to easily load common datasets. 
 //!
 //! We use the [Apache Arrow](https://docs.rs/arrow/3.0.0/arrow/index.html) memory format
 //! which allows for simple conversion to multiple dataframe implementations.
-//!
+//! 
 //! ```rust
 //! use example_data::{Repo};
 //! use arrow::record_batch::RecordBatch;
@@ -12,20 +12,7 @@
 //! let doc : &str = iris.doc().unwrap();
 //! ```
 //!
-//! ### Polars Dataframes
-//!
-//! For Polars dataframes you can do
-//!
-//! ```rust
-//! use example_data::{Repo};
-//! use polars::frame::DataFrame;
-//! use std::convert::TryFrom;
-//!
-//! let iris = Repo::default().load_table("iris").unwrap();
-//! let polars : Result<DataFrame, _> = DataFrame::try_from(iris.data());
-//! ```
-//!
-//! ### Supported datasets
+//! ### Supported datatables
 //!
 //! - iris
 //! - boston
@@ -38,24 +25,53 @@ mod datatables;
 use arrow::datatypes::SchemaRef;
 use arrow::record_batch::RecordBatch;
 
+// This structure is currently not public
+// The idea is to expose it in the future
+#[derive(Clone, Debug)]
+pub struct DataSet {
+    tables: Vec<DataTable>,
+    doc: Option<String>,
+    name: String,
+}
+
+impl DataSet {
+    pub fn new(name: String, tables: Vec<DataTable>, doc: Option<String>) -> Self {
+        Self { tables, name, doc }
+    }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn doc(&self) -> Option<&str> {
+        self.doc.as_deref()
+    }
+
+    pub fn tables(&self) -> &[DataTable] {
+        &self.tables
+    }
+}
+
 /// A table with data
 ///
 /// This corresponds to a DataFrame
 #[derive(Clone, Debug)]
 pub struct DataTable {
     batches: Vec<RecordBatch>,
-    doc: Option<String>,
+    doc : Option<String>,
     name: String,
 }
 
+
 impl DataTable {
+
     /// The content of the DataTable
-    ///
+    /// 
     /// It is guarnateed that all batches have
     /// exactly the same [`Schema`](arrow::datatypes::Schema)
     pub fn data(&self) -> Vec<RecordBatch> {
         // Note, that the cloning is not ridiculously expensive.
-        //
+        // 
         // we clone RecordBatches here
         // The data in all recordbatches is stored as an ArrayRef
         // We are just adding the counters in the Arc
@@ -63,11 +79,11 @@ impl DataTable {
     }
 
     /// The content of the DataTable
-    ///
+    /// 
     /// It is guarnateed that all batches have
     /// exactly the same [`Schema`](arrow::datatypes::Schema)
     pub fn data_ref(&self) -> &[RecordBatch] {
-        &self.batches
+       & self.batches
     }
 
     /// The name of the DataTable
@@ -97,64 +113,70 @@ impl DataTable {
 }
 
 struct DataTableBuilder {
-    batches: Option<Vec<RecordBatch>>,
-    doc: Option<String>,
-    name: Option<String>,
+    batches : Option<Vec<RecordBatch>>,
+    doc : Option<String>,
+    name : Option<String>
 }
 
 impl DataTableBuilder {
+
     fn new() -> Self {
         DataTableBuilder {
-            batches: None,
-            doc: None,
-            name: None,
+            batches : None,
+            doc : None,
+            name : None
         }
     }
 
-    fn with_name(mut self, name: String) -> Self {
+    fn with_name(mut self, name : String) -> Self {
         self.name = Some(name);
         self
     }
 
-    fn with_doc(mut self, doc: String) -> Self {
+    fn with_doc(mut self, doc : String) -> Self {
         self.doc = Some(doc);
         self
     }
 
-    fn with_batches(mut self, batches: Vec<RecordBatch>) -> Self {
+    fn with_batches(mut self, batches : Vec<RecordBatch>) -> Self {
         self.batches = Some(batches);
         self
     }
 
-    fn build(self) -> Result<DataTable, String> {
-        let batches = self
-            .batches
-            .ok_or(String::from("Cannot create DataTable without data/batches"))?;
-        let name = self
-            .name
-            .ok_or(String::from("Cannot create DataTable without a name."))?;
+    fn build(self) -> Result<DataTable, String>
+    {
+        let batches = self.batches.ok_or(String::from("Cannot create DataTable without data/batches"))?;
+        let name = self.name.ok_or(String::from("Cannot create DataTable without a name."))?;
 
         let table = DataTable {
-            name: name,
-            batches: batches,
-            doc: self.doc,
+            name : name,
+            batches : batches,
+            doc : self.doc
         };
 
         Ok(table)
     }
+
 }
+
 
 /// Repo is a collection of [`DataTable`](DataTable)s
 pub trait Repo {
+
     /// Loads the [`DataTable`](DataTable) with matching name
-    fn load_table(&self, name: &str) -> Result<DataTable, String>;
+    fn load_table(&self, name : &str) -> Result<DataTable, String>;
+
+    /// Loads the [`DataTable`](DataSet) with matching name
+    fn load_data_set(&self, name: &str) -> Result<DataSet, String>;
+
 }
 
 impl dyn Repo {
+
     /// Gets the default repository
     ///
     /// Currently, this is the only supported repository.
-    /// In the current set-up all data-tables are included in the
+    /// In the current set-up all data-tables are included in the 
     /// binary.
     ///
     /// This means that no network connection is required to connect to the Repo
@@ -166,13 +188,19 @@ impl dyn Repo {
 struct DefaultRepo {}
 
 impl Repo for DefaultRepo {
+
     /// Loads the [`DataTable`](DataTable) with corresponding name
     fn load_table(&self, name: &str) -> Result<DataTable, String> {
         match name {
-            "iris" => crate::datasets::iris::load_table(),
-            "boston" => crate::datasets::boston::load_table(),
+            "iris" => crate::datatables::iris::load_table(),
+            "boston" => crate::datatables::boston::load_table(),
             _ => Err(format!("{} could not be found in default-repository", name)),
         }
+    }
+
+    /// Loads the [`DataSet`](DataSet) with corresponding name 
+    fn load_data_set(&self, name: &str) -> Result<DataSet, String> {
+        Err(format!("Failed to find dataset {:}", name))
     }
 }
 

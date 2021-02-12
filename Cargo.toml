@@ -7,6 +7,3 @@ edition = "2018"
 [dependencies]
 arrow = "3.0.0"
 
-[dev-dependencies]
-polars = "0.12.0"
-
