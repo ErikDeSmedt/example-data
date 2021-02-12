@@ -1,3 +1,5 @@
+![Rust](https://github.com/ErikDeSmedt/example-data/workflows/Rust/badge.svg)
+
 # Example-data
 
 This crate provides toy-datasets to be used in rust. Because we are using the [Apache Arrow](https://arrow.apache.org/) memory format it can easily be used for multiple dataframe implementations.
@@ -21,3 +23,4 @@ let doc : &str = iris.doc().unwrap();
 
 ## Contribute
 We use github. If you have any questions feel free to open an issue or send a pull-request. We'll be happy to assist.
+
