@@ -1,0 +1,27 @@
+Iris dataset
+
+The iris dataset contains 3 different species of iris flowers. It is typically
+used to illustrate two concepts.
+
+- Classification: Predict variety based on sepal/petal sizes
+- Clustering: Find the three clusters without looking at the variety
+
+Schema
+-----
+- sepal_length: float
+- sepal_width:  float
+- petal_length: float
+- petal_width: float
+- variety : string
+
+References
+----------
+
+FISHER, Ronald A. The use of multiple measurements in taxonomic problems.
+Annals of eugenics, 1936, 7.2: 179-188.
+
+Dua, D. and Graff, C. (2019).
+UCI Machine Learning Repository [http://archive.ics.uci.edu/ml].
+Irvine, CA: University of California,
+chool of Information and Computer Science.
+

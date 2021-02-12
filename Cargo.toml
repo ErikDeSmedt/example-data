@@ -1,0 +1,10 @@
+[package]
+name = "example-data"
+version = "0.0.0"
+authors = ["Erik De Smedt <erikdesmedt@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+arrow = "3.0.0"
+polars = "0.12.0"
+
