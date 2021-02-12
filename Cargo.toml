@@ -1,8 +1,12 @@
 [package]
 name = "example-data"
+description = "Toy datasets"
 version = "0.0.0"
 authors = ["Erik De Smedt <erikdesmedt@gmail.com>"]
 edition = "2018"
+license = "MIT OR Apache-2.0"
+keywords = ["arrow", "data-science","data","example"]
+readme = "README.md"
 
 [dependencies]
 arrow = "3.0.0"
